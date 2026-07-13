@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mengalihkan ke Portal WiFi...</title>
+    <!--
+        rlogin.html — Ditampilkan Mikrotik saat user sudah terautentikasi
+        dan mencoba akses halaman login lagi (mis: connectivity check, buka manual).
+
+        Perilaku:
+        - Redirect SEGERA ke external portal dengan parameter Mikrotik yang sama
+        - Portal (portal.js) akan cek: jika sesi Mikrotik masih aktif → tampilkan "sudah terhubung"
+        - Jika tidak ada sesi → tampilkan form login agar user bisa login ulang
+
+        Ini mencegah layar "Sudah Terhubung" yang membingungkan muncul selama 2 detik
+        sebelum user sampai ke portal yang sesungguhnya.
+    -->
+    <script type="text/javascript">
+      // Redirect LANGSUNG ke external portal, pass semua Mikrotik variables
+      var portalUrl = "http://192.168.88.2:3000/";
+      var params =
+        "?ip=" +
+        encodeURIComponent("$(ip)") +
+        "&mac=" +
+        encodeURIComponent("$(mac)") +
+        "&link-login=" +
+        encodeURIComponent("$(link-login)") +
+        "&link-login-only=" +
+        encodeURIComponent("$(link-login-only)") +
+        "&dst=" +
+        encodeURIComponent("$(dst)") +
+        "&error=" +
+        encodeURIComponent("$(error)") +
+        "&source=rlogin";
+      window.location.replace(portalUrl + params);
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #060713;
+        color: #f1f5f9;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+      }
+      .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid rgba(255, 255, 255, 0.08);
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      p {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 0.875rem;
+      }
+      a {
+        color: #6366f1;
+        font-size: 0.8125rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="spinner"></div>
+    <p>Mengalihkan ke portal login...</p>
+    <!-- Fallback jika JS dinonaktifkan -->
+    <a
+      href="http://192.168.88.2:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&dst=$(dst)&source=rlogin"
+    >
+      Klik di sini jika tidak dialihkan otomatis
+    </a>
+  </body>
+</html>
