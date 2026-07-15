@@ -144,8 +144,14 @@ const updateUser = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User tidak ditemukan.' });
         }
 
-        const user = existing.rows[0];
+                const user = existing.rows[0];
         const bw = bandwidth_limit || user.bandwidth_limit;
+
+        // Normalisasi router_id. Jika kosong atau null, simpan sebagai null (untuk Semua Router)
+        let rId = user.router_id;
+        if (router_id !== undefined) {
+            rId = (router_id === '' || router_id === null) ? null : parseInt(router_id);
+        }
 
         const result = await query(
             `UPDATE hotspot_users SET
@@ -155,12 +161,12 @@ const updateUser = async (req, res) => {
                 password        = COALESCE($4, password),
                 bandwidth_limit = $5,
                 website_block   = COALESCE($6, website_block),
-                router_id       = COALESCE($7, router_id),
+                router_id       = $7,
                 is_active       = COALESCE($8, is_active),
                 notes           = COALESCE($9, notes)
              WHERE id = $10
              RETURNING *`,
-            [full_name, email, phone, password, bw, website_block, router_id, is_active, notes, req.params.id]
+            [full_name, email, phone, password, bw, website_block, rId, is_active, notes, req.params.id]
         );
 
         const updatedUser = result.rows[0];

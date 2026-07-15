@@ -23,7 +23,7 @@ function UserCard({ user, routers, onEdit, onDelete, onBwChange }) {
         {blocks.includes('youtube') && <Badge variant="danger">YT</Badge>}
         {user.router_name
           ? <Badge variant="info">{user.router_name}</Badge>
-          : <Badge variant="neutral">No Router</Badge>
+          : <Badge variant="neutral">Semua Router</Badge>
         }
         <Badge variant={user.is_active ? 'success' : 'neutral'}>
           {user.is_active ? 'Aktif' : 'Nonaktif'}

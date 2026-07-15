@@ -42,7 +42,7 @@ try {
 // ─── Connection Manager ──────────────────────────────────────────────────────
 
 /**
- * Mempatch conn.write untuk menyertakan timeout 20 detik dan penanganan error !empty.
+ * Mempatch conn.write untuk menyertakan timeout 5 detik dan penanganan error !empty.
  * Tanpa timeout ini, jika koneksi TCP setengah terbuka (half-open/dead), perintah write
  * akan menggantung selamanya karena node-routeros tidak membatasi waktu tunggu respon write.
  */
@@ -52,8 +52,8 @@ const patchWriteWithTimeout = (conn) => {
     return new Promise((resolve, reject) => {
       let timer = setTimeout(() => {
         timer = null;
-        reject(new Error("Mikrotik API Write Timeout (20s)"));
-      }, 20000);
+        reject(new Error("Mikrotik API Write Timeout (5s)"));
+      }, 5000);
 
       originalWrite(...args)
         .then((result) => {
@@ -90,7 +90,7 @@ const createConnection = (config) => {
     port: config.api_port || 8728,
     user: config.api_username,
     password: config.api_password,
-    timeout: 20,
+    timeout: 5,
     tls: false,
   });
   // Suppress ALL async errors on this connection to prevent process crash
@@ -134,16 +134,16 @@ const isConnectionAlive = (conn) => {
 };
 
 /**
- * Melakukan koneksi dengan timeout 20 detik untuk menghindari hang saat jabat tangan API (handshake)
+ * Melakukan koneksi dengan timeout 5 detik untuk menghindari hang saat jabat tangan API (handshake)
  */
-const connectWithTimeout = (conn, timeoutMs = 20000) => {
+const connectWithTimeout = (conn, timeoutMs = 5000) => {
   return new Promise((resolve, reject) => {
     let timer = setTimeout(() => {
       timer = null;
       try {
         conn.close(true);
       } catch (_) {}
-      reject(new Error("Mikrotik API Connection Handshake Timeout (20s)"));
+      reject(new Error("Mikrotik API Connection Handshake Timeout (5s)"));
     }, timeoutMs);
 
     conn
@@ -184,7 +184,7 @@ const getOrCreateConnection = async (routerConfig) => {
   }
 
   const conn = createConnection(routerConfig);
-  await connectWithTimeout(conn, 20000);
+  await connectWithTimeout(conn, 5000);
   connectionCache.set(cacheKey, conn);
   return conn;
 };
@@ -205,7 +205,12 @@ const withConnection = async (routerConfig, fn) => {
   // Jalankan request berikutnya setelah request sebelumnya selesai (Sequential Mutex)
   const nextPromise = currentQueue.then(async () => {
     let conn;
+    let usedCache = false;
     try {
+      const cached = connectionCache.get(cacheKey);
+      if (cached && isConnectionAlive(cached)) {
+        usedCache = true;
+      }
       conn = await getOrCreateConnection(routerConfig);
       const result = await fn(conn);
       return result;
@@ -221,20 +226,27 @@ const withConnection = async (routerConfig, fn) => {
         connectionCache.delete(cacheKey);
       }
 
-      // Hubungkan ulang & coba lagi
-      try {
-        conn = await getOrCreateConnection(routerConfig);
-        const result = await fn(conn);
-        return result;
-      } catch (retryErr) {
-        const cachedRetry = connectionCache.get(cacheKey);
-        if (cachedRetry) {
-          try {
-            cachedRetry.close(true);
-          } catch (_) {}
-          connectionCache.delete(cacheKey);
+      // Hanya hubungkan ulang & coba lagi jika sebelumnya kita mencoba menggunakan koneksi cache yang ternyata mati/bermasalah
+      if (usedCache) {
+        try {
+          conn = await getOrCreateConnection(routerConfig);
+          const result = await fn(conn);
+          return result;
+        } catch (retryErr) {
+          const cachedRetry = connectionCache.get(cacheKey);
+          if (cachedRetry) {
+            try {
+              cachedRetry.close(true);
+            } catch (_) {}
+            connectionCache.delete(cacheKey);
+          }
+          const errMsg = retryErr.message || String(retryErr);
+          throw new Error(
+            `Mikrotik API Error [${routerConfig.ip_address}]: ${errMsg}`,
+          );
         }
-        const errMsg = retryErr.message || String(retryErr);
+      } else {
+        const errMsg = err.message || String(err);
         throw new Error(
           `Mikrotik API Error [${routerConfig.ip_address}]: ${errMsg}`,
         );

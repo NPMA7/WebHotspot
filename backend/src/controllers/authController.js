@@ -22,7 +22,7 @@ const getRouterConfig = async (routerId) => {
  *  5. Kembalikan link untuk authenticate ke Mikrotik
  */
 const portalLogin = async (req, res) => {
-    const { username, password, ip, mac, router_id } = req.body;
+    const { username, password, ip, mac, router_id, link_login } = req.body;
 
     if (!username || !password) {
         return res.status(400).json({ success: false, message: 'Username dan password wajib diisi.' });
@@ -51,23 +51,50 @@ const portalLogin = async (req, res) => {
         }
 
         // 3. Tentukan router target
-        const targetRouterId = router_id || user.router_id;
-        let routerConfig;
+        let routerConfig = null;
 
-        if (targetRouterId) {
-            const rResult = await query('SELECT * FROM routers WHERE id = $1 AND is_active = TRUE', [targetRouterId]);
-            routerConfig = rResult.rows[0];
-        } else if (user.router_ip) {
-            routerConfig = {
-                ip_address:   user.router_ip,
-                api_port:     user.api_port,
-                api_username: user.api_username,
-                api_password: user.api_password,
-            };
+        // Coba deteksi dari link_login yang dikirim oleh portal login
+        if (link_login) {
+            let detectedRouterIp = null;
+            try {
+                const url = new URL(link_login);
+                detectedRouterIp = url.hostname;
+            } catch (_) {
+                const match = link_login.match(/https?:\/\/([^\/:]+)/);
+                if (match) detectedRouterIp = match[1];
+            }
+
+            if (detectedRouterIp) {
+                const rResult = await query('SELECT * FROM routers WHERE ip_address = $1 AND is_active = TRUE', [detectedRouterIp]);
+                if (rResult.rows.length > 0) {
+                    routerConfig = rResult.rows[0];
+                }
+            }
+        }
+
+        // Fallback ke router_id dari request body jika tidak terdeteksi dari link_login
+        if (!routerConfig && router_id) {
+            const rResult = await query('SELECT * FROM routers WHERE id = $1 AND is_active = TRUE', [router_id]);
+            if (rResult.rows.length > 0) {
+                routerConfig = rResult.rows[0];
+            }
+        }
+
+        // Fallback ke user.router_id dari profile DB jika masih belum terdeteksi
+        if (!routerConfig && user.router_id) {
+            const rResult = await query('SELECT * FROM routers WHERE id = $1 AND is_active = TRUE', [user.router_id]);
+            if (rResult.rows.length > 0) {
+                routerConfig = rResult.rows[0];
+            }
         }
 
         if (!routerConfig) {
             return res.status(400).json({ success: false, message: 'Router tidak terkonfigurasi untuk user ini.' });
+        }
+
+        // Jika user dibatasi hanya untuk router tertentu (user.router_id tidak null), pastikan router yang dituju sesuai
+        if (user.router_id && user.router_id !== routerConfig.id) {
+            return res.status(403).json({ success: false, message: 'Akun Anda tidak terdaftar untuk digunakan di router ini.' });
         }
 
         // 4. Cek apakah username sudah memiliki sesi aktif di Mikrotik
@@ -123,7 +150,7 @@ const portalLogin = async (req, res) => {
         await query(
             `INSERT INTO active_sessions (hotspot_user_id, router_id, ip_address, mac_address)
              VALUES ($1, $2, $3, $4)`,
-            [user.id, targetRouterId, ip || null, mac || null]
+            [user.id, routerConfig.id, ip || null, mac || null]
         );
 
         res.json({

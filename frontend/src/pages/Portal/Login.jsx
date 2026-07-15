@@ -47,7 +47,7 @@ export default function PortalLogin() {
           password,
           ip: params.ip,
           mac: params.mac,
-          router_id: '1',
+          link_login: params.linkLogin,
         }),
       });
 

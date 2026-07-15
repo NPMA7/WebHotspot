@@ -1,3 +1,3 @@
 username,password,bandwidth_limit,website_block,router_id
-budi_dinas,budi123,5M/5M,,1
-ani_dinas,ani456,10M/10M,youtube,1
+user1,user1,10M/10M,youtube,
+user2,user2,5M/5M,youtube,1
