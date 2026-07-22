@@ -94,3 +94,28 @@ File captive portal lokal harus diunggah ke memori internal router Mikrotik agar
 5. Klik Apply dan OK.
 
 Selesai! Sekarang sistem siap digunakan sepenuhnya.
+
+---
+
+## 🔒 Integrasi Multi-Router & VPN VPS (Opsional)
+Jika Anda ingin menghubungkan beberapa router Mikrotik di lokasi berbeda ke satu VPS portal terpusat:
+
+### 1. Arsitektur Jaringan (Hub-and-Spoke VPN)
+* **VPS Backend** bertindak sebagai **VPN Server** (misal menggunakan WireGuard dengan IP VPN `10.8.0.1`).
+* **Setiap Mikrotik** bertindak sebagai **VPN Client** yang tersambung ke IP Public VPS dan masing-masing mendapatkan IP VPN unik (misal `10.8.0.2`, `10.8.0.3`, dst).
+* **Client WiFi** mengakses portal melalui IP Public/Domain VPS Anda.
+
+### 2. Penyesuaian Konfigurasi Mikrotik
+Pada file `mikrotik_project_setup.rsc`, sesuaikan variabel berikut di bagian atas berkas sebelum mengimpor:
+```routeros
+:local PortalServerIP "IP_PUBLIC_VPS_ANDA"
+:local VpnSubnet "10.8.0.0/24"
+```
+* Ini akan otomatis membuka akses API port `8728` hanya untuk jalur VPN (`10.8.0.0/24`) demi keamanan.
+
+### 3. Penyesuaian File Captive Portal (`login.html` & `rlogin.html`)
+Karena HP/Laptop client berada di luar jaringan VPN, browser client harus diarahkan ke IP Public VPS atau Domain VPS Anda.
+* Buka `/flash/hotspot/login.html` dan `/flash/hotspot/rlogin.html`.
+* Ganti URL `http://192.168.88.2:3000/` dengan alamat IP Public VPS atau domain portal Anda, misalnya `http://portal-wifi.my.id/`.
+* Upload kembali folder `hotspot` tersebut ke files Mikrotik.
+

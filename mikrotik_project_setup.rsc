@@ -6,7 +6,7 @@
 # =============================================================================
 
 # --- LANGKAH 10: IP Service API port 8728 (Akses Web Admin Backend) ---
-
+# CATATAN: Jika menggunakan VPN VPS, ubah 'address=192.168.88.0/24' menjadi subnet VPN Anda (contoh: address=10.8.0.0/24).
 /ip service
 set api port=8728 address=192.168.88.0/24 disabled=no
 set www disabled=no
@@ -32,7 +32,7 @@ add name=hsprof-captive hotspot-address=192.168.10.1 login-by=http-pap html-dire
 add name=hotspot1 interface=bridge-hotspot address-pool=none profile=hsprof-captive idle-timeout=00:02:00 keepalive-timeout=00:02:00 disabled=no
 
 # --- LANGKAH 14: Walled Garden akses ke server captive portal backend ---
-
+# CATATAN: Jika menggunakan VPS, ubah IP '192.168.88.2' di bawah menjadi IP Public VPS atau domain portal Anda (contoh: dst-host=portal-wifi.com).
 /ip hotspot walled-garden
 add server=hotspot1 dst-host=192.168.88.2
 
@@ -47,6 +47,7 @@ add chain=forward action=accept connection-state=established,related
 add chain=input action=drop connection-state=invalid
 add chain=forward action=drop connection-state=invalid
 add chain=input action=accept protocol=icmp
+# CATATAN: Jika menggunakan VPN VPS, ubah 'src-address=192.168.88.0/24' menjadi subnet VPN Anda (contoh: src-address=10.8.0.0/24).
 add chain=input action=accept src-address=192.168.88.0/24
 add chain=input action=accept in-interface=bridge-hotspot protocol=udp dst-port=53
 add chain=input action=accept in-interface=bridge-hotspot protocol=tcp dst-port=53
