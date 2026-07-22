@@ -89,11 +89,20 @@ WebHotspot/
 ├── nginx/                                # Web Server Reverse Proxy
 │   └── nginx.conf                        # Konfigurasi Reverse Proxy Nginx
 │
+├── VPN-SERVER/                           # Script Otomasi VPN Server
+│   └── vpnsetup.sh                       # Script Installer L2TP/IPsec Server di VPS Debian
+│
 ├── .env                                  # Konfigurasi Variabel Lingkungan Sistem
 ├── docker-compose.yml                    # Konfigurasi Orkestrasi Container Docker
 ├── mikrotik_basic_setup.rsc              # Script Setup Internet & LAN Dasar Router
 ├── mikrotik_project_setup.rsc            # Script Setup Hotspot & Integrasi API Web
-└── sample_users.csv                      # Templat Format Berkas CSV Impor Massal
+├── mikrotik_vpn_setup.rsc                # Script Setup L2TP/IPsec Client di Router Mikrotik
+├── sample_users.csv                      # Templat Format Berkas CSV Impor Massal
+├── README.md                             # Panduan Instalasi Sistem Lengkap
+├── SETUP.md                              # Panduan Setup Lengkap: Web UI, Hotspot, & VPN
+├── STRUCTURE.md                          # Panduan Struktur Direktori Proyek
+├── TUTORIAL.md                           # Panduan Lengkap: Web UI, Hotspot, & VPN
+└── VPNSETUP.md                           # Panduan Setup L2TP/IPsec VPN Server & Client
 ```
 
 ---

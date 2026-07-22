@@ -44,8 +44,9 @@ Untuk memblokir situs-situs CDN modern seperti YouTube atau domain kustom (NPMA)
 
 Untuk memulai deploy dan menggunakan sistem ini, silakan baca dokumentasi detail berikut:
 
-1. 💻 **[Panduan Instalasi & Konfigurasi (SETUP.md)](file:///d:/WebHotspot/SETUP.md)**
-2. 📖 **[Panduan Penggunaan Fitur Web Admin (TUTORIAL.md)](file:///d:/WebHotspot/TUTORIAL.md)**
-3. 🤝 **[Panduan Kolaborasi Tim Dev & Network (COLLABORATION.md)](file:///d:/WebHotspot/COLLABORATION.md)**
-4. 📂 **[Panduan Struktur Folder & File (STRUCTURE.md)](file:///d:/WebHotspot/STRUCTURE.md)**
-5. 🔄 **[Panduan Alur Logika Jaringan & Aplikasi (LOGIC_FLOW.md)](file:///d:/WebHotspot/LOGIC_FLOW.md)**
+1. 💻 **[Panduan Instalasi & Konfigurasi (SETUP.md)](./SETUP.md)**
+2. 🔒 **[Panduan Setup VPS & VPN L2TP/IPsec (VPNSETUP.md)](./VPNSETUP.md)**
+3. 📖 **[Panduan Penggunaan Fitur Web Admin (TUTORIAL.md)](./TUTORIAL.md)**
+4. 🤝 **[Panduan Kolaborasi Tim Dev & Network (COLLABORATION.md)](./COLLABORATION.md)**
+5. 📂 **[Panduan Struktur Folder & File (STRUCTURE.md)](./STRUCTURE.md)**
+6. 🔄 **[Panduan Alur Logika Jaringan & Aplikasi (LOGIC_FLOW.md)](./LOGIC_FLOW.md)**

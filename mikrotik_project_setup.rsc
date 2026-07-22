@@ -5,10 +5,14 @@
 # backend web admin, bypass Walled Garden, filter rules, serta script pembersih.
 # =============================================================================
 
+# --- LANGKAH 9.5: L2TP/IPsec VPN Client ke VPS (Opsional jika VPS) ---
+# Un-comment dan sesuaikan parameter di bawah jika router terhubung ke VPS:
+# /interface l2tp-client add name=l2tp-to-vps connect-to=IP_PUBLIC_VPS user=mikrotik password=password_rahasia_anda use-ipsec=yes ipsec-secret=IPSec_Secret_Anda profile=default-encryption disabled=no
+
 # --- LANGKAH 10: IP Service API port 8728 (Akses Web Admin Backend) ---
-# CATATAN: Jika menggunakan VPN VPS, ubah 'address=192.168.88.0/24' menjadi subnet VPN Anda (contoh: address=10.8.0.0/24).
+# CATATAN: Jika menggunakan VPN VPS, sesuaikan 'address' dengan subnet VPN Anda (contoh: address=10.8.0.0/24 atau 0.0.0.0/0).
 /ip service
-set api port=8728 address=192.168.88.0/24 disabled=no
+set api port=8728 address=0.0.0.0/0 disabled=no
 set www disabled=no
 set winbox disabled=no
 set ssh disabled=no
