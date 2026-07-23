@@ -63,8 +63,7 @@ export default function PortalLogin() {
         setTimeout(() => {
           if (params.linkLogin) {
             // Bersihkan query parameter (seperti ?dst=...) dari action URL
-            let actionUrl = params.linkLogin.split('?')[0];
-            actionUrl = actionUrl.replace('hotspot.net', '192.168.10.1');
+            const actionUrl = params.linkLogin.split('?')[0];
 
             let targetDst = params.dst || 'https://www.google.com';
             const rawDst = decodeURIComponent(targetDst);
