@@ -28,7 +28,7 @@ set default idle-timeout=00:02:00 keepalive-timeout=00:02:00 shared-users=1
 # --- LANGKAH 12: Hotspot Server Profile ---
 
 /ip hotspot profile
-add name=hsprof-captive hotspot-address=192.168.10.1 login-by=http-pap html-directory=hotspot http-cookie-lifetime=3d split-user-domain=no use-radius=no
+add name=hsprof-captive hotspot-address=192.168.10.1 dns-name=hotspot.net login-by=http-pap html-directory=hotspot http-cookie-lifetime=3d split-user-domain=no use-radius=no
 
 # --- LANGKAH 13: Hotspot Server pada bridge-hotspot ---
 

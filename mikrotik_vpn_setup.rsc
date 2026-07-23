@@ -4,16 +4,18 @@
 # Jalankan script ini di Mikrotik untuk menghubungkan router ke VPS via L2TP/IPsec.
 # Sesuaikan IP Public VPS, User, Password, dan IPsec Secret sebelum mengimpor.
 # =============================================================================
-
-/interface l2tp-client
-add name=l2tp-to-vps \
-    connect-to=IP_PUBLIC_VPS \
-    user=mikrotik \
-    password=password_rahasia_anda \
+/interface l2tp-client add \
+    name=l2tp-to-vps \
+    connect-to=103.67.244.193 \
+    user=vpnuser \
+    password=Hi7ZD6mhgBwVkxhi \
     use-ipsec=yes \
-    ipsec-secret=IPSec_Secret_Anda \
+    ipsec-secret=ATE7GEM3frnPqjhhDpMc \
     profile=default-encryption \
+    allow=mschap2 \
     disabled=no
+
+/ip address print where interface=l2tp-to-vps
 
 # Izinkan IP API Server (Backend VPS) mengakses API Mikrotik
 /ip service
