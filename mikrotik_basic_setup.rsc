@@ -53,6 +53,9 @@ add chain=srcnat out-interface=ether1 action=masquerade
 /ip dns
 set servers=8.8.8.8,1.1.1.1 allow-remote-requests=yes
 
+/ip dns static
+add name=hotspot.net address=192.168.10.1
+
 # --- LANGKAH 8: System Identity ---
 
 /system identity
