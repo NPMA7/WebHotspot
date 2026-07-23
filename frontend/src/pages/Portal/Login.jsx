@@ -62,9 +62,30 @@ export default function PortalLogin() {
 
         setTimeout(() => {
           if (params.linkLogin) {
+            // Bersihkan query parameter (seperti ?dst=...) dari action URL
+            const actionUrl = params.linkLogin.split('?')[0];
+
+            let targetDst = params.dst || 'https://www.google.com';
+            const rawDst = decodeURIComponent(targetDst);
+
+            // Jika dst berisi URL probe bawaan OS (gstatic, msftconnecttest, generate_204, dll) atau IP local, ganti ke google.com
+            if (
+              !targetDst ||
+              rawDst.includes('generate_204') ||
+              rawDst.includes('gstatic.com') ||
+              rawDst.includes('msftconnecttest') ||
+              rawDst.includes('connectivitycheck') ||
+              rawDst.includes('captive.apple.com') ||
+              rawDst.includes('detectportal') ||
+              rawDst.includes('$(dst)') ||
+              rawDst.includes('192.168.')
+            ) {
+              targetDst = 'https://www.google.com';
+            }
+
             const formEl = document.createElement('form');
             formEl.method = 'POST';
-            formEl.action = params.linkLogin;
+            formEl.action = actionUrl;
             formEl.style.display = 'none';
 
             const addField = (n, v) => {
@@ -77,13 +98,11 @@ export default function PortalLogin() {
 
             addField('username', username);
             addField('password', password);
-            addField('dst', params.dst);
+            addField('dst', targetDst);
             addField('popup', 'true');
 
             document.body.appendChild(formEl);
             formEl.submit();
-          } else if (params.dst) {
-            window.location.href = params.dst;
           } else {
             window.location.href = 'https://www.google.com';
           }

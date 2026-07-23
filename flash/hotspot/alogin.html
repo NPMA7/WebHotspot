@@ -150,8 +150,12 @@
         // Instantly check if there is a target redirect link
         function doRedirect() {
             setTimeout(function() {
-                window.location.href = "$(link-redirect)";
-            }, 2000);
+                var target = "$(link-redirect)";
+                if (!target || target.indexOf('generate_204') !== -1 || target.indexOf('gstatic') !== -1 || target.indexOf('msftconnecttest') !== -1 || target.indexOf('connectivitycheck') !== -1) {
+                    target = "https://www.google.com";
+                }
+                window.location.href = target;
+            }, 1000);
         }
     </script>
 </head>

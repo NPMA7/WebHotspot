@@ -18,8 +18,7 @@
     -->
     <script type="text/javascript">
       // Redirect LANGSUNG ke external portal, pass semua Mikrotik variables
-      // CATATAN: Ubah "http://192.168.88.2:3000/" di bawah ini dengan IP Public VPS atau domain portal Anda (misal: "http://portal-wifi.my.id/") jika deploy di internet/VPS.
-      var portalUrl = "http://192.168.88.2:3000/";
+      var portalUrl = "http://103.67.244.193:3000/";
       var params =
         "?ip=" +
         encodeURIComponent("$(ip)") +
@@ -80,7 +79,7 @@
     <p>Mengalihkan ke portal login...</p>
     <!-- Fallback jika JS dinonaktifkan -->
     <a
-      href="http://192.168.88.2:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&dst=$(dst)&source=rlogin"
+      href="http://103.67.244.193:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&dst=$(dst)&source=rlogin"
     >
       Klik di sini jika tidak dialihkan otomatis
     </a>

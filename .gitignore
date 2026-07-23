@@ -39,3 +39,7 @@ Thumbs.db
 # File Backup Mikrotik
 *.backup
 /backup/
+
+# Berkas Solusi Internal Diskominfo
+SOLUSI_FTTH_DISKOMINFO.md
+

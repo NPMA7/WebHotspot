@@ -3,12 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=http://192.168.88.2:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&link-login-only=$(link-login-only)&dst=$(dst)&error=$(error)">
+    <meta http-equiv="refresh" content="0; url=http://103.67.244.193:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&link-login-only=$(link-login-only)&dst=$(dst)&error=$(error)">
     <title>Redirecting to Hotspot Portal...</title>
     <script type="text/javascript">
-        // Redirect client to external server (Docker container host at 192.168.88.2)
-        // CATATAN: Ubah "http://192.168.88.2:3000/" di bawah ini dengan IP Public VPS atau domain portal Anda (misal: "http://portal-wifi.my.id/") jika deploy di internet/VPS.
-        var portalUrl = "http://192.168.88.2:3000/";
+        // Redirect client to external server (VPS at 103.67.244.193)
+        var portalUrl = "http://103.67.244.193:3000/";
         var params = "?ip=" + encodeURIComponent("$(ip)") +
                      "&mac=" + encodeURIComponent("$(mac)") +
                      "&link-login=" + encodeURIComponent("$(link-login)") +
@@ -22,7 +21,7 @@
     <div style="padding: 40px 20px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #080916; color: #f1f5f9; min-height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <div style="width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.08); border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
         <h3 style="margin: 0 0 10px; font-weight: 600;">Menghubungkan ke Portal WiFi...</h3>
-        <p style="margin: 0; color: #94a3b8; font-size: 0.875rem;">Jika Anda tidak diarahkan otomatis, silakan <a href="http://192.168.88.2:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&link-login-only=$(link-login-only)&dst=$(dst)&error=$(error)" style="color: #6366f1; text-decoration: none; font-weight: 500;">klik di sini</a>.</p>
+        <p style="margin: 0; color: #94a3b8; font-size: 0.875rem;">Jika Anda tidak diarahkan otomatis, silakan <a href="http://103.67.244.193:3000/?ip=$(ip)&mac=$(mac)&link-login=$(link-login)&link-login-only=$(link-login-only)&dst=$(dst)&error=$(error)" style="color: #6366f1; text-decoration: none; font-weight: 500;">klik di sini</a>.</p>
     </div>
     <style>
         @keyframes spin { to { transform: rotate(360deg); } }
