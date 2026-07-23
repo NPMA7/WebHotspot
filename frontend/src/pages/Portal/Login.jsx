@@ -61,28 +61,25 @@ export default function PortalLogin() {
         });
 
         setTimeout(() => {
+          let targetDst = params.dst || 'https://www.google.com';
+          const rawDst = decodeURIComponent(targetDst);
+
+          if (
+            !targetDst ||
+            rawDst.includes('generate_204') ||
+            rawDst.includes('gstatic.com') ||
+            rawDst.includes('msftconnecttest') ||
+            rawDst.includes('connectivitycheck') ||
+            rawDst.includes('captive.apple.com') ||
+            rawDst.includes('detectportal') ||
+            rawDst.includes('$(dst)') ||
+            rawDst.includes('192.168.')
+          ) {
+            targetDst = 'https://www.google.com';
+          }
+
           if (params.linkLogin) {
-            // Bersihkan query parameter (seperti ?dst=...) dari action URL
             const actionUrl = params.linkLogin.split('?')[0];
-
-            let targetDst = params.dst || 'https://www.google.com';
-            const rawDst = decodeURIComponent(targetDst);
-
-            // Jika dst berisi URL probe bawaan OS (gstatic, msftconnecttest, generate_204, dll) atau IP local, ganti ke google.com
-            if (
-              !targetDst ||
-              rawDst.includes('generate_204') ||
-              rawDst.includes('gstatic.com') ||
-              rawDst.includes('msftconnecttest') ||
-              rawDst.includes('connectivitycheck') ||
-              rawDst.includes('captive.apple.com') ||
-              rawDst.includes('detectportal') ||
-              rawDst.includes('$(dst)') ||
-              rawDst.includes('192.168.')
-            ) {
-              targetDst = 'https://www.google.com';
-            }
-
             const formEl = document.createElement('form');
             formEl.method = 'POST';
             formEl.action = actionUrl;
@@ -102,11 +99,15 @@ export default function PortalLogin() {
             addField('popup', 'true');
 
             document.body.appendChild(formEl);
-            formEl.submit();
+            try { formEl.submit(); } catch (_) {}
+
+            setTimeout(() => {
+              window.location.href = targetDst;
+            }, 800);
           } else {
-            window.location.href = 'https://www.google.com';
+            window.location.href = targetDst;
           }
-        }, 1500);
+        }, 1200);
       } else {
         setStatus('failed');
         setAlert({ type: 'error', msg: data.message || 'Login gagal. Periksa username dan password.' });
