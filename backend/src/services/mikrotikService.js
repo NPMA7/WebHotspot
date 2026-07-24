@@ -764,6 +764,20 @@ const setupPortalUser = async (
       } catch (bindingErr) {
         console.warn("[setupPortalUser] IP Binding cleanup error:", bindingErr.message);
       }
+
+      // 1.6. Otorisasi instan ke /ip/hotspot/active via RouterOS API
+      try {
+        const activeArgs = [
+          `=user=${username}`,
+          `=password=${password}`,
+        ];
+        if (ip) activeArgs.push(`=ip=${ip}`);
+        if (mac) activeArgs.push(`=mac-address=${mac}`);
+        await conn.write("/ip/hotspot/active/login", activeArgs);
+        console.log(`[setupPortalUser] Active user login successful via API for ${username}`);
+      } catch (activeErr) {
+        console.warn("[setupPortalUser] Active login via API notice:", activeErr.message);
+      }
     }
 
     // 2. Buat/Update Simple Queue jika ada IP dan Limit

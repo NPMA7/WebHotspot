@@ -73,24 +73,9 @@ export default function PortalLogin() {
             targetDst = 'http://www.msftconnecttest.com/connecttest.txt';
           }
 
-          // Tentukan URL login MikroTik (prioritaskan IP Gateway 192.168.10.1 agar bebas DNS/DoH)
-          let loginBase = params.linkLoginOnly || params.linkLogin;
-          if (loginBase) {
-            loginBase = loginBase.split('?')[0];
-          }
-          if (!loginBase || loginBase.includes('hotspot.net')) {
-            let gwIp = '192.168.10.1';
-            if (params.ip) {
-              const parts = params.ip.split('.');
-              if (parts.length === 4) gwIp = `${parts[0]}.${parts[1]}.${parts[2]}.1`;
-            }
-            loginBase = `http://${gwIp}/login`;
-          }
-
-          // Navigasikan window.location.href langsung ke MikroTik dengan parameter username, password, & dst
-          const redirectUrl = `${loginBase}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&dst=${encodeURIComponent(targetDst)}`;
-
-          window.location.href = redirectUrl;
+          // Karena Backend sudah mengotorisasi user langsung ke /ip/hotspot/active via RouterOS API,
+          // Internet sudah 100% aktif! Frontend cukup mengarahkan window ke targetDst.
+          window.location.href = targetDst;
         }, 800);
       } else {
         setStatus('failed');
