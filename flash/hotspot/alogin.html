@@ -151,8 +151,8 @@
         function doRedirect() {
             setTimeout(function() {
                 var target = "$(link-redirect)";
-                if (!target || target.indexOf('generate_204') !== -1 || target.indexOf('gstatic') !== -1 || target.indexOf('msftconnecttest') !== -1 || target.indexOf('connectivitycheck') !== -1) {
-                    target = "https://www.google.com";
+                if (!target || target === "" || target.indexOf('$(link-redirect)') !== -1) {
+                    target = "http://www.google.com";
                 }
                 window.location.href = target;
             }, 1000);
