@@ -158,8 +158,8 @@ export default function Queues() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Pilih Router:</span>
             <select
-              className="form-control"
-              style={{ width: 220, padding: '6px 12px' }}
+              className="select"
+              style={{ minWidth: 220 }}
               value={routerId}
               onChange={e => setRouterId(e.target.value)}
             >

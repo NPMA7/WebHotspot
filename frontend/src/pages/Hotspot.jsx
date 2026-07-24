@@ -145,10 +145,11 @@ export default function Hotspot() {
     }
   }
 
-  const filtered = data.filter(row => {
+  const safeData = Array.isArray(data) ? data : [];
+  const filtered = safeData.filter(row => {
     if (!search) return true;
     const s = search.toLowerCase();
-    return Object.values(row).some(v => String(v).toLowerCase().includes(s));
+    return Object.values(row || {}).some(v => String(v || '').toLowerCase().includes(s));
   });
 
   function renderTable() {
@@ -291,7 +292,7 @@ export default function Hotspot() {
           {loading ? (
             <Loader />
           ) : filtered.length === 0 ? (
-            <EmptyState icon="📡" text={`Tidak ada data ${TABS.find(t => t.key === tab)?.label.toLowerCase()}.`} />
+            <EmptyState icon="📡" text={`Tidak ada data ${(TABS.find(t => t.key === tab)?.label || 'sesi').toLowerCase()}.`} />
           ) : (
             renderTable()
           )}
