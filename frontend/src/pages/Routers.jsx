@@ -80,9 +80,16 @@ export default function Routers() {
 
   async function loadRouters() {
     setLoading(true);
-    const d = await apiFetch('/routers');
-    if (d?.success) setRouters(d.data);
-    setLoading(false);
+    try {
+      const d = await apiFetch('/routers');
+      if (d?.success) {
+        setRouters(d.data || []);
+      }
+    } catch (err) {
+      ctx?.addToast?.('danger', err.message || 'Gagal memuat daftar router.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   function openAdd() {

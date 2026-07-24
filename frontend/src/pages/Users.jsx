@@ -87,13 +87,18 @@ export default function Users() {
 
   async function loadUsers(p = page) {
     setLoading(true);
-    const params = new URLSearchParams({ page: p, limit: 20, search, ...(routerFilter ? { router_id: routerFilter } : {}) });
-    const d = await apiFetch(`/users?${params}`);
-    if (d?.success) {
-      setUsers(d.data);
-      setTotal(d.pagination?.total || 0);
+    try {
+      const params = new URLSearchParams({ page: p, limit: 20, search, ...(routerFilter ? { router_id: routerFilter } : {}) });
+      const d = await apiFetch(`/users?${params}`);
+      if (d?.success) {
+        setUsers(d.data || []);
+        setTotal(d.pagination?.total || 0);
+      }
+    } catch (err) {
+      ctx?.addToast?.('danger', err.message || 'Gagal memuat pengguna.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   function onSearchChange(v) {
