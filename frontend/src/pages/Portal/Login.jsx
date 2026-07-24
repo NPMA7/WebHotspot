@@ -78,36 +78,38 @@ export default function PortalLogin() {
             targetDst = 'https://www.google.com';
           }
 
-          if (params.linkLogin) {
-            const actionUrl = params.linkLogin.split('?')[0];
-            const formEl = document.createElement('form');
-            formEl.method = 'POST';
-            formEl.action = actionUrl;
-            formEl.style.display = 'none';
+          const actionUrl = params.linkLogin
+            ? params.linkLogin.split('?')[0]
+            : (data.data?.mikrotik_login_url || 'http://192.168.10.1/login');
 
-            const addField = (n, v) => {
-              const input = document.createElement('input');
-              input.type = 'hidden';
-              input.name = n;
-              input.value = v;
-              formEl.appendChild(input);
-            };
+          const formEl = document.createElement('form');
+          formEl.method = 'POST';
+          formEl.action = actionUrl;
+          formEl.style.display = 'none';
 
-            addField('username', username);
-            addField('password', password);
-            addField('dst', targetDst);
-            addField('popup', 'true');
+          const addField = (n, v) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = n;
+            input.value = v;
+            formEl.appendChild(input);
+          };
 
-            document.body.appendChild(formEl);
-            try { formEl.submit(); } catch (_) {}
+          addField('username', username);
+          addField('password', password);
+          addField('dst', targetDst);
+          addField('popup', 'true');
 
-            setTimeout(() => {
-              window.location.href = targetDst;
-            }, 800);
-          } else {
+          document.body.appendChild(formEl);
+          
+          // Submit form ke MikroTik agar user resmi masuk ke /ip/hotspot/active
+          try {
+            formEl.submit();
+          } catch (submitErr) {
+            console.error('Form submit error:', submitErr);
             window.location.href = targetDst;
           }
-        }, 1200);
+        }, 800);
       } else {
         setStatus('failed');
         setAlert({ type: 'error', msg: data.message || 'Login gagal. Periksa username dan password.' });
