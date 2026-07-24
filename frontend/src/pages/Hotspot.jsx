@@ -20,11 +20,12 @@ function formatBytes(b) {
 }
 
 function formatSpeed(val) {
-  if (!val || val === '0' || val === '0 bps') return '0 bps';
+  if (!val || val === '0' || val === '0 bps' || val === 0) return '0 bps';
   if (typeof val === 'string' && (val.includes('kbps') || val.includes('Mbps') || val.includes('Gbps') || val.includes('bps'))) {
     return val;
   }
-  const n = parseInt(val) || 0;
+  const n = typeof val === 'number' ? val : (parseInt(val) || 0);
+  if (n >= 1000000000) return (n / 1000000000).toFixed(2) + ' Gbps';
   if (n >= 1000000) return (n / 1000000).toFixed(1) + ' Mbps';
   if (n >= 1000) return (n / 1000).toFixed(1) + ' kbps';
   return n + ' bps';

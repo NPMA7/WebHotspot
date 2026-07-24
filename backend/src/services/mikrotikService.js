@@ -433,6 +433,9 @@ const cleanupStaleHotspotUsers = async (conn) => {
   }
 };
 
+// Cache untuk menghitung rate realtime berdasarkan selisih bytes
+const activeRateCache = new Map();
+
 /**
  * Ambil daftar user hotspot yang sedang aktif
  */
@@ -446,27 +449,90 @@ const getActiveHotspotUsers = async (routerConfig) => {
     }
 
     const sessions = await conn.write("/ip/hotspot/active/print");
-    return sessions.map((s) => ({
-      id: s[".id"] || "",
-      user: s["user"] || "",
-      domain: s["domain"] || "",
-      address: s["address"] || "",
-      mac: s["mac-address"] || "",
-      "mac-address": s["mac-address"] || "",
-      uptime: s["uptime"] || "",
-      bytes_in: s["bytes-in"] || "0",
-      bytes_out: s["bytes-out"] || "0",
-      "bytes-in": s["bytes-in"] || "0",
-      "bytes-out": s["bytes-out"] || "0",
-      rx_rate: s["rx-rate"] || "0 bps",
-      tx_rate: s["tx-rate"] || "0 bps",
-      "rx-rate": s["rx-rate"] || "0 bps",
-      "tx-rate": s["tx-rate"] || "0 bps",
-      packets_in: s["packets-in"] || "0",
-      packets_out: s["packets-out"] || "0",
-      server: s["server"] || "",
-      comment: s["comment"] || "",
-    }));
+
+    // Ambil data queue/simple untuk mendapatkan rate bawaan queue jika ada
+    let queueMap = new Map();
+    try {
+      const queues = await conn.write("/queue/simple/print");
+      for (const q of queues) {
+        if (q.target) {
+          const ip = q.target.split("/")[0];
+          queueMap.set(ip, q.rate || "");
+        }
+        if (q.name) {
+          queueMap.set(q.name, q.rate || "");
+        }
+      }
+    } catch (_) {}
+
+    const now = Date.now();
+
+    return sessions.map((s) => {
+      const userIp = s["address"] || "";
+      const username = s["user"] || "";
+      const queueName = `hotspot-${username}`;
+
+      const bytesIn = parseInt(s["bytes-in"] || "0", 10) || 0;
+      const bytesOut = parseInt(s["bytes-out"] || "0", 10) || 0;
+
+      let rxBps = 0; // Upload bps
+      let txBps = 0; // Download bps
+
+      // 1. Coba ambil dari queue rate ("rx_bps/tx_bps")
+      const qRate = queueMap.get(userIp) || queueMap.get(queueName) || "";
+      if (qRate && qRate.includes("/")) {
+        const parts = qRate.split("/");
+        rxBps = parseInt(parts[0], 10) || 0;
+        txBps = parseInt(parts[1], 10) || 0;
+      }
+
+      // 2. Hitung selisih byte per detik (delta calculation) jika queue rate 0
+      const cacheKey = `${routerConfig.ip_address}:${userIp || username}`;
+      const prev = activeRateCache.get(cacheKey);
+
+      if (prev && prev.timestamp < now) {
+        const dt = (now - prev.timestamp) / 1000;
+        if (dt > 0.5) {
+          const deltaRx = Math.max(0, bytesIn - prev.bytesIn);
+          const deltaTx = Math.max(0, bytesOut - prev.bytesOut);
+
+          const calcRxBps = Math.round((deltaRx * 8) / dt);
+          const calcTxBps = Math.round((deltaTx * 8) / dt);
+
+          if (rxBps === 0) rxBps = calcRxBps;
+          if (txBps === 0) txBps = calcTxBps;
+        }
+      }
+
+      // Simpan sampel terbaru ke cache
+      activeRateCache.set(cacheKey, {
+        bytesIn,
+        bytesOut,
+        timestamp: now,
+      });
+
+      return {
+        id: s[".id"] || "",
+        user: username,
+        domain: s["domain"] || "",
+        address: userIp,
+        mac: s["mac-address"] || "",
+        "mac-address": s["mac-address"] || "",
+        uptime: s["uptime"] || "",
+        bytes_in: s["bytes-in"] || "0",
+        bytes_out: s["bytes-out"] || "0",
+        "bytes-in": s["bytes-in"] || "0",
+        "bytes-out": s["bytes-out"] || "0",
+        rx_rate: rxBps,
+        tx_rate: txBps,
+        "rx-rate": rxBps,
+        "tx-rate": txBps,
+        packets_in: s["packets-in"] || "0",
+        packets_out: s["packets-out"] || "0",
+        server: s["server"] || "",
+        comment: s["comment"] || "",
+      };
+    });
   });
 };
 
