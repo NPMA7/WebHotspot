@@ -49,6 +49,8 @@ add chain=input action=accept in-interface=bridge-hotspot protocol=tcp dst-port=
 add chain=input action=accept in-interface=bridge-hotspot protocol=udp dst-port=67
 add chain=input action=drop in-interface=ether1
 
+# /ip firewall filter 
+# add chain=forward protocol=udp dst-port=443 action=drop comment="Block QUIC UDP 443" place-before=0
 
 # --- LANGKAH 7: Script Penghancur Sesi & Lease Diskonek Instan (Wireless) ---
 /system script

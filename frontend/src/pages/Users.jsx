@@ -337,10 +337,20 @@ export default function Users() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Bandwidth Limit</label>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <input className="input" value={form.bandwidth_limit} onChange={e => setForm(f => ({ ...f, bandwidth_limit: e.target.value }))} placeholder="10M/10M" style={{ flex: 1 }} />
-                <select className="select" style={{ width: 'auto' }} onChange={e => e.target.value && setForm(f => ({ ...f, bandwidth_limit: e.target.value }))}>
-                  <option value="">Preset</option>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 8, alignItems: 'center' }}>
+                <input
+                  className="input"
+                  value={form.bandwidth_limit}
+                  onChange={e => setForm(f => ({ ...f, bandwidth_limit: e.target.value }))}
+                  placeholder="10M/10M"
+                />
+                <select
+                  className="select"
+                  style={{ minWidth: 100 }}
+                  onChange={e => e.target.value && setForm(f => ({ ...f, bandwidth_limit: e.target.value }))}
+                  value=""
+                >
+                  <option value="" disabled>Preset</option>
                   {BW_PRESETS.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
               </div>
