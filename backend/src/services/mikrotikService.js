@@ -747,8 +747,7 @@ const setupPortalUser = async (
       `=comment=temp-${Date.now()}`,
     ]);
 
-    // 1.5. Otomatis otorisasi perangkat di Mikrotik via IP Binding (bypassed)
-    // Hal ini langsung mengotorisasi perangkat di router tanpa tergantung pada form POST / DNS client
+    // 1.5. Bersihkan IP Binding lama (jika ada sisa bypass) agar user wajib autentikasi via Captive Portal
     if (mac || ip) {
       try {
         const allBindings = await conn.write("/ip/hotspot/ip-binding/print");
@@ -762,15 +761,8 @@ const setupPortalUser = async (
             } catch (_) {}
           }
         }
-        const bindingArgs = [
-          `=type=bypassed`,
-          `=comment=temp-${username}`,
-        ];
-        if (targetMac) bindingArgs.push(`=mac-address=${targetMac}`);
-        if (ip) bindingArgs.push(`=address=${ip}`);
-        await conn.write("/ip/hotspot/ip-binding/add", bindingArgs);
       } catch (bindingErr) {
-        console.warn("[setupPortalUser] IP Binding error:", bindingErr.message);
+        console.warn("[setupPortalUser] IP Binding cleanup error:", bindingErr.message);
       }
     }
 
