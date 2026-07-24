@@ -2,6 +2,7 @@
 
 /* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
+  color-scheme: dark;
   --primary:        #6366f1;
   --primary-light:  #818cf8;
   --primary-dark:   #4f46e5;
@@ -469,15 +470,41 @@ textarea::placeholder {
 select,
 .select,
 .form-control {
+  color-scheme: dark !important;
+  background-color: #0f172a !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
-  background-position: right 12px center !important;
+  background-position: right 10px center !important;
   background-size: 14px !important;
-  padding-right: 36px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  color: #f8fafc !important;
+  padding: 7px 32px 7px 12px !important;
+  font-size: 0.83rem !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
   appearance: none !important;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
+  transition: all 0.2s ease !important;
   cursor: pointer !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+}
+
+select:hover,
+.select:hover,
+.form-control:hover {
+  border-color: rgba(99, 102, 241, 0.4) !important;
+  background-color: #1e293b !important;
+}
+
+select:focus,
+.select:focus,
+.form-control:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+  background-color: #1e293b !important;
 }
 
 select option,
