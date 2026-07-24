@@ -70,7 +70,7 @@ export default function PortalLogin() {
             rawDst.includes('192.168.10.1') ||
             rawDst.includes('google.com')
           ) {
-            targetDst = 'http://www.msftconnecttest.com/redirect';
+            targetDst = 'http://www.msftconnecttest.com/connecttest.txt';
           }
 
           // Tentukan URL login MikroTik (prioritaskan IP Gateway 192.168.10.1 agar bebas DNS/DoH)
