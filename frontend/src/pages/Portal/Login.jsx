@@ -61,21 +61,15 @@ export default function PortalLogin() {
         });
 
         setTimeout(() => {
-          let targetDst = params.dst || 'https://www.google.com';
-          const rawDst = decodeURIComponent(targetDst);
+          let targetDst = params.dst;
+          const rawDst = decodeURIComponent(targetDst || '');
 
           if (
             !targetDst ||
-            rawDst.includes('generate_204') ||
-            rawDst.includes('gstatic.com') ||
-            rawDst.includes('msftconnecttest') ||
-            rawDst.includes('connectivitycheck') ||
-            rawDst.includes('captive.apple.com') ||
-            rawDst.includes('detectportal') ||
             rawDst.includes('$(dst)') ||
-            rawDst.includes('192.168.')
+            rawDst.includes('192.168.10.1')
           ) {
-            targetDst = 'https://www.google.com';
+            targetDst = 'http://www.google.com';
           }
 
           const actionUrl = params.linkLogin
