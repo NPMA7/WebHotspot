@@ -12,6 +12,17 @@ function formatBytes(b) {
   return n + ' B';
 }
 
+function formatSpeed(val) {
+  if (!val || val === '0' || val === '0 bps') return '0 bps';
+  if (typeof val === 'string' && (val.includes('kbps') || val.includes('Mbps') || val.includes('Gbps') || val.includes('bps'))) {
+    return val;
+  }
+  const n = parseInt(val) || 0;
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + ' Mbps';
+  if (n >= 1000) return (n / 1000).toFixed(1) + ' kbps';
+  return n + ' bps';
+}
+
 function ResourceBar({ label, value, max, unit = '%', color = 'var(--primary)' }) {
   const pct = Math.min((value / max) * 100, 100);
   const barColor = pct > 85 ? 'var(--danger)' : pct > 65 ? 'var(--warning)' : color;
@@ -191,8 +202,8 @@ export default function Dashboard() {
                   <th>IP Address</th>
                   <th>MAC</th>
                   <th>Uptime</th>
-                  <th>Download</th>
-                  <th>Upload</th>
+                  <th>Traffic Realtime (DL / UL)</th>
+                  <th>Total Kuota (Kumulatif)</th>
                 </tr>
               </thead>
               <tbody>
@@ -202,8 +213,22 @@ export default function Dashboard() {
                     <td className="mono">{s.address || '—'}</td>
                     <td className="mono" style={{ fontSize: '0.72rem' }}>{s.mac || s['mac-address'] || '—'}</td>
                     <td>{s.uptime || '—'}</td>
-                    <td>{formatBytes(s.bytes_out || s['bytes-out'])}</td>
-                    <td>{formatBytes(s.bytes_in || s['bytes-in'])}</td>
+                    <td>
+                      <span style={{ color: '#10b981', fontWeight: 600, marginRight: 8 }}>
+                        ↓ {formatSpeed(s.tx_rate || s['tx-rate'])}
+                      </span>
+                      <span style={{ color: '#8b5cf6', fontWeight: 600 }}>
+                        ↑ {formatSpeed(s.rx_rate || s['rx-rate'])}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ color: 'var(--text-main)', fontSize: '0.85rem' }}>
+                        ↓ {formatBytes(s.bytes_out || s['bytes-out'])}
+                      </span>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginLeft: 8 }}>
+                        (↑ {formatBytes(s.bytes_in || s['bytes-in'])})
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
