@@ -72,43 +72,24 @@ export default function PortalLogin() {
             targetDst = 'http://www.google.com';
           }
 
-          let actionUrl = data.data?.mikrotik_login_url;
-          if (!actionUrl || actionUrl.includes('hotspot.net')) {
+          // Tentukan URL login MikroTik (prioritaskan IP Gateway 192.168.10.1 agar bebas DNS/DoH)
+          let loginBase = params.linkLoginOnly || params.linkLogin;
+          if (loginBase) {
+            loginBase = loginBase.split('?')[0];
+          }
+          if (!loginBase || loginBase.includes('hotspot.net')) {
             let gwIp = '192.168.10.1';
             if (params.ip) {
               const parts = params.ip.split('.');
               if (parts.length === 4) gwIp = `${parts[0]}.${parts[1]}.${parts[2]}.1`;
             }
-            actionUrl = `http://${gwIp}/login`;
+            loginBase = `http://${gwIp}/login`;
           }
 
-          const formEl = document.createElement('form');
-          formEl.method = 'POST';
-          formEl.action = actionUrl;
-          formEl.style.display = 'none';
+          // Navigasikan window.location.href langsung ke MikroTik dengan parameter username, password, & dst
+          const redirectUrl = `${loginBase}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&dst=${encodeURIComponent(targetDst)}`;
 
-          const addField = (n, v) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = n;
-            input.value = v;
-            formEl.appendChild(input);
-          };
-
-          addField('username', username);
-          addField('password', password);
-          addField('dst', targetDst);
-          addField('popup', 'true');
-
-          document.body.appendChild(formEl);
-          
-          // Submit form ke MikroTik agar user resmi masuk ke /ip/hotspot/active
-          try {
-            formEl.submit();
-          } catch (submitErr) {
-            console.error('Form submit error:', submitErr);
-            window.location.href = targetDst;
-          }
+          window.location.href = redirectUrl;
         }, 800);
       } else {
         setStatus('failed');
