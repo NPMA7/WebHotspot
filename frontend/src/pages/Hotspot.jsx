@@ -44,14 +44,19 @@ export default function Hotspot() {
 
   useEffect(() => { ctx?.setPageTitle?.('Hotspot Router'); }, [ctx]);
 
-  useEffect(() => {
-    apiFetch('/routers').then(d => {
+  const loadRouters = useCallback(async () => {
+    try {
+      const d = await apiFetch('/routers');
       if (d?.success && d.data.length > 0) {
         setRouters(d.data);
-        setRouterId(d.data[0].id);
+        setRouterId(prev => prev || d.data[0].id);
       }
-    });
+    } catch (_) {}
   }, []);
+
+  useEffect(() => {
+    loadRouters();
+  }, [loadRouters]);
 
   useEffect(() => {
     if (routerId) {

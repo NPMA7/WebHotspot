@@ -52,17 +52,23 @@ export default function Dashboard() {
 
   useEffect(() => { ctx?.setPageTitle?.('Dashboard'); }, [ctx]);
 
-  useEffect(() => {
-    apiFetch('/routers').then(d => {
-      if (d?.success && d.data.length > 0) {
-        setRouters(d.data);
-        setRouterId(d.data[0].id);
+  const loadRoutersAndSummary = useCallback(async () => {
+    try {
+      const [rRes, sRes] = await Promise.all([
+        apiFetch('/routers'),
+        apiFetch('/dashboard/summary'),
+      ]);
+      if (rRes?.success && rRes.data.length > 0) {
+        setRouters(rRes.data);
+        setRouterId(prev => prev || rRes.data[0].id);
       }
-    });
-    apiFetch('/dashboard/summary').then(d => {
-      if (d?.success) setSummary(d.data);
-    });
+      if (sRes?.success) setSummary(sRes.data);
+    } catch (_) {}
   }, []);
+
+  useEffect(() => {
+    loadRoutersAndSummary();
+  }, [loadRoutersAndSummary]);
 
   const loadRouterData = useCallback(async () => {
     if (!routerId) return;
@@ -86,12 +92,16 @@ export default function Dashboard() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown(c => {
-        if (c <= 1) { loadRouterData(); return 30; }
+        if (c <= 1) { 
+          loadRoutersAndSummary();
+          loadRouterData(); 
+          return 30; 
+        }
         return c - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [loadRouterData]);
+  }, [loadRouterData, loadRoutersAndSummary]);
 
   return (
     <>
@@ -181,7 +191,7 @@ export default function Dashboard() {
             Sesi Aktif Sekarang
             <Badge variant="primary">{sessions.length}</Badge>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={loadRouterData} disabled={loading}>
+          <button className="btn btn-secondary btn-sm" onClick={() => { loadRoutersAndSummary(); if (routerId) loadRouterData(); }} disabled={loading}>
             {loading ? <div className="loader-ring" style={{ width: 14, height: 14, borderWidth: 2 }} /> : (
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
                 <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/>

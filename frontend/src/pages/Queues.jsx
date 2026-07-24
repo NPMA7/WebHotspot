@@ -54,15 +54,19 @@ export default function Queues() {
 
   useEffect(() => { ctx?.setPageTitle?.('Simple Queues'); }, [ctx]);
 
-  // Load router list
-  useEffect(() => {
-    apiFetch('/routers').then(d => {
+  const loadRouters = useCallback(async () => {
+    try {
+      const d = await apiFetch('/routers');
       if (d?.success && d.data.length > 0) {
         setRouters(d.data);
-        setRouterId(d.data[0].id);
+        setRouterId(prev => prev || d.data[0].id);
       }
-    }).catch(() => {});
+    } catch (_) {}
   }, []);
+
+  useEffect(() => {
+    loadRouters();
+  }, [loadRouters]);
 
   const loadQueues = useCallback(async (rId) => {
     if (!rId) return;
