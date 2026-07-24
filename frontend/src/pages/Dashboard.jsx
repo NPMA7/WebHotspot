@@ -200,10 +200,10 @@ export default function Dashboard() {
                   <tr key={i}>
                     <td style={{ fontWeight: 600 }}>{s.user || '—'}</td>
                     <td className="mono">{s.address || '—'}</td>
-                    <td className="mono" style={{ fontSize: '0.72rem' }}>{s['mac-address'] || '—'}</td>
+                    <td className="mono" style={{ fontSize: '0.72rem' }}>{s.mac || s['mac-address'] || '—'}</td>
                     <td>{s.uptime || '—'}</td>
-                    <td>{formatBytes(s['bytes-in'])}</td>
-                    <td>{formatBytes(s['bytes-out'])}</td>
+                    <td>{formatBytes(s.bytes_out || s['bytes-out'])}</td>
+                    <td>{formatBytes(s.bytes_in || s['bytes-in'])}</td>
                   </tr>
                 ))}
               </tbody>

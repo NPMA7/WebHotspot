@@ -149,8 +149,8 @@ export default function Hotspot() {
                 <td className="mono">{s.address || '—'}</td>
                 <td className="mono" style={{ fontSize: '0.72rem' }}>{s.mac || s['mac-address'] || '—'}</td>
                 <td>{s.uptime || '—'}</td>
-                <td>{formatBytes(s['bytes-in'] || s.bytes_in)}</td>
-                <td>{formatBytes(s['bytes-out'] || s.bytes_out)}</td>
+                <td>{formatBytes(s.bytes_out || s['bytes-out'])}</td>
+                <td>{formatBytes(s.bytes_in || s['bytes-in'])}</td>
                 <td>
                   <button className="btn btn-danger btn-xs" onClick={() => setConfirmKick({ id: s.id || s['.id'], user: s.user })}>
                     Kick
