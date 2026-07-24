@@ -16,18 +16,36 @@ export async function apiFetch(path, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers,
-  });
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers,
+    });
 
-  if (res.status === 401) {
-    localStorage.removeItem('hotspot_token');
-    window.location.href = '/admin/login';
-    return null;
+    if (res.status === 401) {
+      localStorage.removeItem('hotspot_token');
+      window.location.href = '/admin/login';
+      return null;
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      const text = await res.text();
+      console.warn(`[apiFetch Non-JSON ${res.status}]`, text);
+      return {
+        success: false,
+        message: `Server backend sedang dalam perbaikan/booting (Status ${res.status}).`,
+      };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error(`[apiFetch Network Error ${path}]`, err.message);
+    return {
+      success: false,
+      message: err.message || 'Gagal terhubung ke backend server.',
+    };
   }
-
-  return res.json();
 }
 
 export async function apiPost(path, body) {

@@ -1,9 +1,9 @@
 const express = require('express');
 const router  = express.Router();
 const { getQueues, actionQueue } = require('../controllers/queueController');
-const authMiddleware = require('../middleware/authMiddleware');
+const adminAuth = require('../middleware/adminAuth');
 
-router.use(authMiddleware);
+router.use(adminAuth);
 
 router.get('/:routerId', getQueues);
 router.post('/:routerId/action', actionQueue);
