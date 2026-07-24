@@ -72,9 +72,15 @@ export default function PortalLogin() {
             targetDst = 'http://www.google.com';
           }
 
-          const actionUrl = params.linkLogin
-            ? params.linkLogin.split('?')[0]
-            : (data.data?.mikrotik_login_url || 'http://192.168.10.1/login');
+          let actionUrl = data.data?.mikrotik_login_url;
+          if (!actionUrl || actionUrl.includes('hotspot.net')) {
+            let gwIp = '192.168.10.1';
+            if (params.ip) {
+              const parts = params.ip.split('.');
+              if (parts.length === 4) gwIp = `${parts[0]}.${parts[1]}.${parts[2]}.1`;
+            }
+            actionUrl = `http://${gwIp}/login`;
+          }
 
           const formEl = document.createElement('form');
           formEl.method = 'POST';
