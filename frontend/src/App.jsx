@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import Routers from './pages/Routers';
 import Hotspot from './pages/Hotspot';
 import DhcpLeases from './pages/DhcpLeases';
+import Queues from './pages/Queues';
 import PortalLogin from './pages/Portal/Login';
 import './index.css';
 
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="users" element={<Users />} />
           <Route path="routers" element={<Routers />} />
           <Route path="hotspot" element={<Hotspot />} />
+          <Route path="queues" element={<Queues />} />
           <Route path="dhcp" element={<DhcpLeases />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

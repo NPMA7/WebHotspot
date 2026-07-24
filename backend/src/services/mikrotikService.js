@@ -1467,6 +1467,45 @@ const removeHotspotActive = async (routerConfig, activeId) => {
   });
 };
 
+/**
+ * Ambil daftar Simple Queues dari Mikrotik
+ */
+const getSimpleQueues = async (routerConfig) => {
+  return withConnection(routerConfig, async (conn) => {
+    const queues = await conn.write("/queue/simple/print");
+    return queues.map((q) => ({
+      id: q[".id"] || "",
+      name: q["name"] || "",
+      target: q["target"] || "",
+      max_limit: q["max-limit"] || "",
+      rate: q["rate"] || "0/0",
+      bytes: q["bytes"] || "0/0",
+      packets: q["packets"] || "0/0",
+      disabled: q["disabled"] === "true" || q["disabled"] === true,
+      comment: q["comment"] || "",
+    }));
+  });
+};
+
+/**
+ * Hapus atau aktifkan/nonaktifkan Simple Queue
+ */
+const manageSimpleQueue = async (routerConfig, queueId, action) => {
+  return withConnection(routerConfig, async (conn) => {
+    if (action === "remove") {
+      await conn.write("/queue/simple/remove", [`=.id=${queueId}`]);
+      return { success: true, message: "Queue berhasil dihapus." };
+    } else if (action === "enable") {
+      await conn.write("/queue/simple/enable", [`=.id=${queueId}`]);
+      return { success: true, message: "Queue berhasil diaktifkan." };
+    } else if (action === "disable") {
+      await conn.write("/queue/simple/disable", [`=.id=${queueId}`]);
+      return { success: true, message: "Queue berhasil dinonaktifkan." };
+    }
+    throw new Error("Aksi tidak valid.");
+  });
+};
+
 module.exports = {
   getDashboardData,
   getSystemInfo,
@@ -1493,4 +1532,6 @@ module.exports = {
   removeRouterHotspotUser,
   removeRouterHotspotUserByName,
   removeHotspotActive,
+  getSimpleQueues,
+  manageSimpleQueue,
 };

@@ -56,6 +56,15 @@ const NAV = [
         ),
       },
       {
+        to: '/admin/queues',
+        label: 'Simple Queues',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        ),
+      },
+      {
         to: '/admin/dhcp',
         label: 'DHCP Leases',
         icon: (
@@ -87,7 +96,7 @@ const NAV = [
   },
 ];
 
-export default function Sidebar({ collapsed, onToggle, badges = {} }) {
+export default function Sidebar({ collapsed, mobileOpen, onToggle, onCloseMobile, badges = {} }) {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
 
@@ -107,18 +116,38 @@ export default function Sidebar({ collapsed, onToggle, badges = {} }) {
   const initial = admin?.username?.[0]?.toUpperCase() || 'A';
 
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       {/* Brand */}
-      <div className="sidebar-brand">
-        <div className="brand-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-            <path d="M1.213 8.98a12.006 12.006 0 0121.574 0 1 1 0 01-1.8.87 10.006 10.006 0 00-17.972 0 1 1 0 11-1.802-.87zM5.04 12.68a8 8 0 0113.92 0 1 1 0 01-1.74.98 6 6 0 00-10.44 0 1 1 0 11-1.74-.98zM12 20a2 2 0 100-4 2 2 0 000 4z"/>
-          </svg>
+      <div className="sidebar-brand" style={{ justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="brand-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <path d="M1.213 8.98a12.006 12.006 0 0121.574 0 1 1 0 01-1.8.87 10.006 10.006 0 00-17.972 0 1 1 0 11-1.802-.87zM5.04 12.68a8 8 0 0113.92 0 1 1 0 01-1.74.98 6 6 0 00-10.44 0 1 1 0 11-1.74-.98zM12 20a2 2 0 100-4 2 2 0 000 4z"/>
+            </svg>
+          </div>
+          <div className="brand-text">
+            <span className="brand-name">HotSpot Pro</span>
+            <span className="brand-tag">v1.0</span>
+          </div>
         </div>
-        <div className="brand-text">
-          <span className="brand-name">HotSpot Pro</span>
-          <span className="brand-tag">v1.0</span>
-        </div>
+        {mobileOpen && (
+          <button
+            onClick={onCloseMobile}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              padding: 4,
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -128,7 +157,7 @@ export default function Sidebar({ collapsed, onToggle, badges = {} }) {
             <div className="nav-group-label">{group.group}</div>
             {group.items.map((item) =>
               item.external ? (
-                <a key={item.to} href={item.to} target="_blank" rel="noopener noreferrer" className="nav-item">
+                <a key={item.to} href={item.to} target="_blank" rel="noopener noreferrer" className="nav-item" onClick={onCloseMobile}>
                   {item.icon}
                   <span className="nav-label">{item.label}</span>
                 </a>
@@ -137,6 +166,7 @@ export default function Sidebar({ collapsed, onToggle, badges = {} }) {
                   key={item.to}
                   to={item.to}
                   end={item.end}
+                  onClick={onCloseMobile}
                   className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
                 >
                   {item.icon}

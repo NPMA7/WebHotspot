@@ -53,6 +53,7 @@ app.use('/api/users',     require('./routes/users'));
 app.use('/api/routers',   require('./routes/routers'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/dhcp',      require('./routes/dhcp'));
+app.use('/api/queues',    require('./routes/queues'));
 app.use('/api/hotspot-router', require('./routes/hotspotRouter'));
 
 // ── Health Check ─────────────────────────────────────────────

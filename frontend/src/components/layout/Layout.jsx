@@ -50,9 +50,10 @@ export default function Layout() {
 
         <Sidebar
           collapsed={collapsed}
+          mobileOpen={mobileOpen}
           onToggle={toggleSidebar}
+          onCloseMobile={closeMobile}
           badges={badges}
-          className={mobileOpen ? 'mobile-open' : ''}
         />
 
         <main className={`main-content ${collapsed ? 'sidebar-collapsed' : ''}`}>
